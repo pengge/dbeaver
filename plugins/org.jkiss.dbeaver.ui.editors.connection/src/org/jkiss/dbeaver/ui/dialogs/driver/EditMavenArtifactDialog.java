@@ -106,7 +106,7 @@ public class EditMavenArtifactDialog extends BaseDialog {
                 public void widgetSelected(SelectionEvent e) {
                     artifacts.clear();
                     //check if we are on raw tab. When trues to parse
-                    if (tabFolder.getSelectionIndex() == 0 && tabFolder.getItemCount() != 1){
+                    if (tabFolder.getSelection()[0].getData().equals(TabData.RAW)){
                         UIUtils.asyncExec(EditMavenArtifactDialog.this::parseArtifactText);
                     }
                 }
@@ -205,6 +205,7 @@ public class EditMavenArtifactDialog extends BaseDialog {
         TabItem item = new TabItem(folder, SWT.NONE);
         item.setText(UIConnectionMessages.dialog_edit_driver_edit_maven_raw);
         item.setControl(container);
+        item.setData(TabData.RAW);
     }
 
     private void createManualTab(@NotNull TabFolder folder) {
@@ -225,6 +226,7 @@ public class EditMavenArtifactDialog extends BaseDialog {
         TabItem item = new TabItem(folder, SWT.NONE);
         item.setText(UIConnectionMessages.dialog_edit_driver_edit_maven_manual);
         item.setControl(container);
+        item.setData(TabData.MANUAL);
 
 
         ModifyListener ml = e -> updateButtons();
@@ -361,6 +363,11 @@ public class EditMavenArtifactDialog extends BaseDialog {
 
     }
 
+    private enum TabData{
+        RAW,
+        MANUAL
+    }
+
     private enum State {
         DEPENDENCIES,
         DEPENDENCY,
@@ -371,10 +378,10 @@ public class EditMavenArtifactDialog extends BaseDialog {
 
     @Override
     protected void okPressed() {
-        if (tabFolder.getSelectionIndex() == 1) {
+        if (tabFolder.getSelection()[0].getData().equals(TabData.MANUAL)) {
             if (originalArtifact != null) {
                 originalArtifact.setReference(new MavenArtifactReference(groupText.getText(), artifactText.getText(), null, defaultVersionText.getText()));
-                originalArtifact.setPreferredVersion(defaultVersionText.getText());
+                originalArtifact.setPreferredVersion(preferredVersionText.getText());
                 originalArtifact.setIgnoreDependencies(ignoreDependencies);
                 originalArtifact.setLoadOptionalDependencies(loadOptionalDependencies);
             } else {
